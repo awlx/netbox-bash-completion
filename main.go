@@ -55,7 +55,7 @@ func getAllDevices(netboxClient http.Client, searchString string) (netboxDevices
 	req, err := http.NewRequest(http.MethodGet, netboxCall, nil)
 
 	if err != nil {
-		fmt.Println("HTTP Request Build failed with: ", err)
+		panic(err)
 	}
 
 	req.Header.Set("Authorization", fmt.Sprintf("Token %s", *netboxAPIToken))
@@ -63,13 +63,13 @@ func getAllDevices(netboxClient http.Client, searchString string) (netboxDevices
 	res, err := netboxClient.Do(req)
 
 	if err != nil {
-		fmt.Println("HTTP Request failed with: ", err)
+		panic(err)
 	}
 
 	body, err := ioutil.ReadAll(res.Body)
 	defer res.Body.Close()
 	if err != nil {
-		fmt.Println("Reading body failed with: ", err)
+		panic(err)
 	}
 
 	var netboxDeviceList NetboxResult
