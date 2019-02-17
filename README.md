@@ -3,7 +3,7 @@ Looks up devices from Netbox and offers autocompletion for SSH
 
 ### Usage
 ```
-Usage of ./netbox-autocompletion:
+Usage of ./netbox-bash-completion:
   -netbox string
         Netbox BaseURL (default "https://netbox.local")
   -netbox-api-token string
@@ -15,4 +15,4 @@ Usage of ./netbox-autocompletion:
 ```
 
 ### Add this to your .bashrc
-```source $GOTPATH/src/github.com/awlx/netbox-autocompletion/bash/completion-go.sh```
+```source $GOTPATH/src/github.com/awlx/netbox-bash-completion/bash/completion-go.sh```
