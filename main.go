@@ -50,10 +50,13 @@ func main() {
 }
 
 func getAllDevices(netboxClient http.Client, searchString string) (netboxDevices map[string]bool) {
-	netboxCall := fmt.Sprintf("%s/api/dcim/devices/?q=%s", *netbox, searchString)
+	deviceMap := make(map[string]bool)
 
-	req, err := http.NewRequest(http.MethodGet, netboxCall, nil)
+	deviceURL := fmt.Sprintf("%s/api/dcim/devices/?q=%s", *netbox, searchString)
+	vmURL := fmt.Sprintf("%s/api/virtualization/virtual-machines/?q=%s", *netbox, searchString)
 
+	// Query devices
+	req, err := http.NewRequest(http.MethodGet, deviceURL, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -61,7 +64,6 @@ func getAllDevices(netboxClient http.Client, searchString string) (netboxDevices
 	req.Header.Set("Authorization", fmt.Sprintf("Token %s", *netboxAPIToken))
 
 	res, err := netboxClient.Do(req)
-
 	if err != nil {
 		panic(err)
 	}
@@ -79,11 +81,43 @@ func getAllDevices(netboxClient http.Client, searchString string) (netboxDevices
 	if bodyErr != nil {
 		fmt.Println("Json Unmarshal failed with: ", err)
 	}
-	deviceMap := make(map[string]bool)
 
 	for i := 0; i < len(netboxDeviceList.Results); i++ {
 		if _, device := deviceMap[netboxDeviceList.Results[i].Name]; !device {
 			deviceMap[netboxDeviceList.Results[i].Name] = true
+		}
+	}
+
+	// Query VMs
+	req, err = http.NewRequest(http.MethodGet, vmURL, nil)
+	if err != nil {
+		panic(err)
+	}
+
+	req.Header.Set("Authorization", fmt.Sprintf("Token %s", *netboxAPIToken))
+
+	res, err = netboxClient.Do(req)
+	if err != nil {
+		panic(err)
+	}
+
+	body, err = ioutil.ReadAll(res.Body)
+	defer res.Body.Close()
+	if err != nil {
+		panic(err)
+	}
+
+	var netboxVMList NetboxResult
+
+	bodyErr = json.Unmarshal(body, &netboxVMList)
+
+	if bodyErr != nil {
+		fmt.Println("Json Unmarshal failed with: ", err)
+	}
+
+	for i := 0; i < len(netboxVMList.Results); i++ {
+		if _, device := deviceMap[netboxVMList.Results[i].Name]; !device {
+			deviceMap[netboxVMList.Results[i].Name] = true
 		}
 	}
 
