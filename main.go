@@ -13,7 +13,7 @@ var (
 	netbox         = flag.String("netbox", "https://netbox.local", "Netbox BaseURL")
 	netboxAPIToken = flag.String("netbox-api-token", "", "Mandatory: Netbox API Token")
 	netboxDevice   = flag.String("netbox-device", "", "Device String to search for")
-	tld            = flag.String("tld", "local", "Default TLD for devices")
+	tld            = flag.String("tld", ".local", "Default TLD for devices")
 )
 
 // NetboxResult the whole Json Reply
@@ -45,7 +45,7 @@ func main() {
 
 	devices = getAllDevices(netboxClient, *netboxDevice)
 	for device := range devices {
-		fmt.Println(fmt.Sprintf("%s.%s", device, *tld))
+		fmt.Println(fmt.Sprintf("%s%s", device, *tld))
 	}
 }
 
